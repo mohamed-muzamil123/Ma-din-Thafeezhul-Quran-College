@@ -30,7 +30,7 @@
         // Create an array of promises for all Firestore document fetches
         const promises = [];
         for (let i = 101; i <= 105; i++) {
-            const studentRef = doc(db, "25-march-6", i.toString());
+            const studentRef = doc(db, "25-march-9", i.toString());
             promises.push(getDoc(studentRef)); // Add the promise to the array
         }
 
