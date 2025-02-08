@@ -109,7 +109,7 @@ const firebaseConfig = {
 
             // Login validation and redirection
             if (username === 'u' && password === 'u') {
-                localStorage.setItem('loggedInUser', 'user');
+                localStorage.setItem('loggedInUser', 'u');
                 window.location.href = './ADMIN_SPACE/dashboard.html';
             } else if (username === '6' && password === '6') {
                 localStorage.setItem('loggedInUser', '6');
@@ -133,9 +133,9 @@ const firebaseConfig = {
         });
 
         function redirectUser(username) {
-           /* if (username === 'user') {
+            if (username === 'u') {
                 window.location.href = './ADMIN_SPACE/dashboard.html';
-            } else*/ if (username === '6') {
+            } else if (username === '6') {
                 window.location.href = './CLASS_6/6-main.html';
             } else if (username === '7') {
                 window.location.href = './CLASS_7/7-main.html';
