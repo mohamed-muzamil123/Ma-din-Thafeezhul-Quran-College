@@ -25,34 +25,21 @@
         const db = getFirestore(app);
         const analytics = getAnalytics(app);
     
-        window.loadStudentData = async function () {
-    try {
-        // Create an array of promises for all Firestore document fetches
-        const promises = [];
-        for (let i = 101; i <= 105; i++) {
-            const studentRef = doc(db, "25-march-7", i.toString());
-            promises.push(getDoc(studentRef)); // Add the promise to the array
-        }
-
-        // Wait for all promises to resolve concurrently
-        const results = await Promise.all(promises);
-
-        // Process the results
-        results.forEach((docSnap, index) => {
-            const admNo = 101 + index; // Calculate the admission number
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                document.getElementById('page-' + admNo).innerText = data.page || '';
-                document.getElementById('opage-' + admNo).innerText = data.opage || '';
-                document.getElementById('mpage-' + admNo).innerText = data.mpage || '';
-            } else {
-                console.log("No such document for Adm No " + admNo);
+        window.loadStudentData = async function() {
+            for (let i = 101; i <= 105; i++) {
+                const studentRef = doc(db, "25-march-7", i.toString());
+                const docSnap = await getDoc(studentRef);
+    
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    document.getElementById('page-' + i).innerText = data.page || '';
+                    document.getElementById('opage-' + i).innerText = data.opage || '';
+                    document.getElementById('mpage-' + i).innerText = data.mpage || '';
+                } else {
+                    console.log("No such document for Adm No " + i);
+                }
             }
-        });
-    } catch (error) {
-        console.error("Error loading student data:", error);
-    }
-};
+        };
     
         window.updateStudentInfo = async function() {
             const admNo = document.getElementById('admNo').value;
