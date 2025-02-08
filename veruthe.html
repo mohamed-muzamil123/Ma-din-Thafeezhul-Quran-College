@@ -25,19 +25,29 @@
         const db = getFirestore(app);
         const analytics = getAnalytics(app);
     
-        window.loadStudentData = async function() {
-            for (let i = 101; i <= 105; i++) {
-                const studentRef = doc(db, "25-march-6", i.toString());
-                const docSnap = await getDoc(studentRef);
-    
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    document.getElementById('page-' + i).innerText = data.page || '';
-                    document.getElementById('opage-' + i).innerText = data.opage || '';
-                    document.getElementById('mpage-' + i).innerText = data.mpage || '';
-                } else {
-                    console.log("No such document for Adm No " + i);
+        window.loadStudentData = async function () {
+            try {
+                const promises = [];
+                for (let i = 101; i <= 105; i++) {
+                    const studentRef = doc(db, "25-march-6", i.toString());
+                    promises.push(getDoc(studentRef));
                 }
+
+                const results = await Promise.all(promises);
+
+                results.forEach((docSnap, index) => {
+                    const admNo = 101 + index;
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        document.getElementById('page-' + admNo).innerText = data.page || '';
+                        document.getElementById('opage-' + admNo).innerText = data.opage || '';
+                        document.getElementById('mpage-' + admNo).innerText = data.mpage || '';
+                    } else {
+                        console.log("No such document for Adm No " + admNo);
+                    }
+                });
+            } catch (error) {
+                console.error("Error loading student data:", error);
             }
         };
     
@@ -69,6 +79,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
     <style>
+        /* Your existing CSS styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
@@ -149,17 +160,17 @@
         /* Error message styling */
         .error {
             color: red;
-        }
+        }   
     </style>
 </head>
 <body>
-
-    <!-- Button container for back and admin buttons -->
+    <!-- Your existing HTML content -->
+        <!-- Button container for back and admin buttons -->
     <div class="button-container">
         <div class="back-button">
             <a href="6-month.html" class="green-button">Go Back</a>
         </div>
-        <button class="admin-button" id="adminButton" onclick="toggleAdminForm()">Admin</button>
+       <!-- <button class="admin-button" id="adminButton" onclick="toggleAdminForm()">Admin</button> -->
     </div>
 
     <h2>Student Monthly Chart</h2>
@@ -248,66 +259,66 @@
         <button class="btn btn-success" onclick="updateStudentInfo()">Save</button>
     </div>
 
+
     <script>
-  // Function to move focus to the next input field when "Enter" is pressed
-  function moveFocus(event, nextFieldId) {
-            if (event.key === "Enter") {
-                event.preventDefault();  // Prevent form submission
-                document.getElementById(nextFieldId).focus();  // Move focus to the next field
-            }
-        }
-    
-        // Function to submit the form when the "Enter" key is pressed in the last input field
-        function submitForm(event) {
-            if (event.key === "Enter") {
-                event.preventDefault();  // Prevent form submission
-                updateStudentInfo();  // Call the function to update the student info
-            }
-        }
-
-        function submitAdmin(event) {
-            if (event.key === "Enter") {
-                event.preventDefault();  // Prevent form submission
-                unlockForm();  // Call the function to update the student info
-            }
-        }
-
-
-        // Function to toggle the admin form visibility
-        function toggleAdminForm() {
-    const adminForm = document.getElementById('adminForm');
-    const adminButton = document.getElementById('adminButton');
-    if (adminForm.style.display === 'none') {
-        adminForm.style.display = 'block';
-        adminButton.innerText = 'Logout';
-        // Scroll to the admin form
-        adminForm.scrollIntoView({ behavior: 'smooth' });
-    } else {
-        adminForm.style.display = 'none';
-        adminButton.innerText = 'Admin';
-    }
-}
-
-        // Function to unlock the form if the correct password is provided
-        function unlockForm() {
-    const password = document.getElementById('password').value;
-    const errorMessage = document.getElementById('error-message');
-    const studentForm = document.getElementById('student-form');
-
-    const ADMIN_PASSWORD = "a"; // You can change this password
-
-    if (password === ADMIN_PASSWORD) {
-        studentForm.style.display = 'block';
-        errorMessage.innerText = '';
-        console.log("✅ Correct password! Form is now visible.");
-        // Scroll to the student form
-        studentForm.scrollIntoView({ behavior: 'smooth' });
-    } else {
-        errorMessage.innerText = '❌ Incorrect password. Please try again.';
-        console.log("❌ Wrong password entered.");
-    }
-}
-    </script>
-
+        // Function to move focus to the next input field when "Enter" is pressed
+        function moveFocus(event, nextFieldId) {
+                  if (event.key === "Enter") {
+                      event.preventDefault();  // Prevent form submission
+                      document.getElementById(nextFieldId).focus();  // Move focus to the next field
+                  }
+              }
+          
+              // Function to submit the form when the "Enter" key is pressed in the last input field
+              function submitForm(event) {
+                  if (event.key === "Enter") {
+                      event.preventDefault();  // Prevent form submission
+                      updateStudentInfo();  // Call the function to update the student info
+                  }
+              }
+      
+              function submitAdmin(event) {
+                  if (event.key === "Enter") {
+                      event.preventDefault();  // Prevent form submission
+                      unlockForm();  // Call the function to update the student info
+                  }
+              }
+      
+      
+              // Function to toggle the admin form visibility
+              function toggleAdminForm() {
+          const adminForm = document.getElementById('adminForm');
+          const adminButton = document.getElementById('adminButton');
+          if (adminForm.style.display === 'none') {
+              adminForm.style.display = 'block';
+              adminButton.innerText = 'Logout';
+              // Scroll to the admin form
+              adminForm.scrollIntoView({ behavior: 'smooth' });
+          } else {
+              adminForm.style.display = 'none';
+              adminButton.innerText = 'Admin';
+          }
+      }
+      
+              // Function to unlock the form if the correct password is provided
+              function unlockForm() {
+          const password = document.getElementById('password').value;
+          const errorMessage = document.getElementById('error-message');
+          const studentForm = document.getElementById('student-form');
+      
+          const ADMIN_PASSWORD = "a"; // You can change this password
+      
+          if (password === ADMIN_PASSWORD) {
+              studentForm.style.display = 'block';
+              errorMessage.innerText = '';
+              console.log("✅ Correct password! Form is now visible.");
+              // Scroll to the student form
+              studentForm.scrollIntoView({ behavior: 'smooth' });
+          } else {
+              errorMessage.innerText = '❌ Incorrect password. Please try again.';
+              console.log("❌ Wrong password entered.");
+          }
+      }
+          </script>
 </body>
 </html>
