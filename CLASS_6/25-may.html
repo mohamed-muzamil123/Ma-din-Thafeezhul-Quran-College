@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="apple-touch-icon" sizes="180x180" href="../FAVICON/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../FAVICON/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../FAVICON/favicon-16x16.png">
+<link rel="manifest" href="../FAVICON/site.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="../FAVICON/android-chrome-192x192.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../FAVICON/android-chrome-512x512.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Student Table</title>
+    <!-- Add Bootstrap Latest CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script type="module">
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-analytics.js";
+      
+        const firebaseConfig = {
+            apiKey: "AIzaSyAY1lYlM5yv7K9Vkb-jIkQQala7ckekWXM",
+            authDomain: "hifz-demo.firebaseapp.com",
+            projectId: "hifz-demo",
+            storageBucket: "hifz-demo.appspot.com",
+            messagingSenderId: "448125408252",
+            appId: "1:448125408252:web:099fb4bca38519bcd7d879",
+            measurementId: "G-GZRDVCWG5N"
+        };
+    
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const analytics = getAnalytics(app);
+    
+        window.loadStudentData = async function () {
+    try {
+        // Create an array of promises for all Firestore document fetches
+        const promises = [];
+        for (let i = 573; i <= 614; i++) {
+            const studentRef = doc(db, "25-may-6", i.toString());
+            promises.push(getDoc(studentRef)); // Add the promise to the array
+        }
+
+        // Wait for all promises to resolve concurrently
+        const results = await Promise.all(promises);
+
+        // Process the results
+        results.forEach((docSnap, index) => {
+            const admNo = 573 + index; // Calculate the admission number
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                document.getElementById('page-' + admNo).innerText = data.page || '';
+                document.getElementById('opage-' + admNo).innerText = data.opage || '';
+                document.getElementById('mpage-' + admNo).innerText = data.mpage || '';
+                 document.getElementById('juz-' + admNo).innerText = data.juz|| '';
+            } else {
+                console.log("No such document for Adm No " + admNo);
+            }
+        });
+    } catch (error) {
+        console.error("Error loading student data:", error);
+    }
+};
+    
+        window.updateStudentInfo = async function() {
+            const admNo = document.getElementById('admNo').value;
+            const page = document.getElementById('page').value;
+            const opage = document.getElementById('opage').value;
+            const mpage = document.getElementById('mpage').value;
+            const juz= document.getElementById('juz').value;
+    
+            const studentRef = doc(db, "25-may-6", admNo);
+    
+            try {
+                await setDoc(studentRef, { page, opage, mpage, juz }, { merge: true });
+                console.log("Document successfully updated!");
+                loadStudentData();
+                document.getElementById('page').value = '';
+                document.getElementById('opage').value = '';
+                document.getElementById('mpage').value = '';
+                document.getElementById('juz').value = '';
+                document.getElementById('admNo').value = '';
+            } catch (error) {
+                console.error("Error updating document:", error);
+            }
+        };
+    
+        window.onload = loadStudentData;
+    </script>
+
+    <!-- Add Bootstrap Latest JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        h2 {
+            text-align: center;
+            margin: 30px 0;
+            font-size: 28px;
+            color: #333;
+        }
+
+        /* Button container for mobile responsiveness */
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #f4f4f9;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        /* Back button styling */
+        .back-button a {
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #3e8e41;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 14px;
+            border: 2px solid #3e8e41;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Admin button styling */
+        .admin-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .admin-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Table styling */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table-bordered th, .table-bordered td {
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        /* Form container styling */
+        .form-container {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Error message styling */
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Button container for back and admin buttons -->
+    <div class="button-container">
+        <div class="back-button">
+            <a href="6-month.html" class="green-button">Go Back</a>
+        </div>
+         <!-- <button class="admin-button" id="adminButton" onclick="toggleAdminForm()">Admin</button> -->
+    </div>
+
+    <h2>Student Monthly Chart</h2>
+
+    <!-- Responsive table -->
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Adm No</th>
+                    <th>Name</th>
+                    <th>പാഠം</th>
+                    <th>അഞ്ച് പാഠം</th>
+                    <th>മുറാജഅ</th>
+                    <th>Total Juz</th>
+                </tr>
+            </thead>
+            <tbody>
+                    <tr>
+                        <td>573</td>
+                        <td>Mohammed Hamdan</td>
+                        <td id="page-573"></td>
+                        <td id="opage-573"></td>
+                        <td id="mpage-573"></td>
+                        <td id="juz-573"></td>
+                    </tr>
+                    <tr>
+                        <td>574</td>
+                        <td>Mohammed Aboobacker</td>
+                        <td id="page-574"></td>
+                        <td id="opage-574"></td>
+                        <td id="mpage-574"></td>
+                        <td id="juz-574"></td>
+                    </tr>
+                    <tr>
+                        <td>575</td>
+                        <td>Mohammed Sinan</td>
+                        <td id="page-575"></td>
+                        <td id="opage-575"></td>
+                        <td id="mpage-575"></td>
+                        <td id="juz-575"></td>
+                    </tr>
+                    <tr>
+                        <td>577</td>
+                        <td>Munthalir Hameem</td>
+                        <td id="page-577"></td>
+                        <td id="opage-577"></td>
+                        <td id="mpage-577"></td>
+                        <td id="juz-577"></td>
+                    </tr>
+                    <tr>
+                        <td>578</td>
+                        <td>Savad</td>
+                        <td id="page-578"></td>
+                        <td id="opage-578"></td>
+                        <td id="mpage-578"></td>
+                        <td id="juz-578"></td>
+                    </tr>
+                    <tr>
+                        <td>579</td>
+                        <td>Mohammed Shah</td>
+                        <td id="page-579"></td>
+                        <td id="opage-579"></td>
+                        <td id="mpage-579"></td>
+                        <td id="juz-579"></td>
+                    </tr>
+                    <tr>
+                        <td>580</td>
+                        <td>Mohammed Swabeeh</td>
+                        <td id="page-580"></td>
+                        <td id="opage-580"></td>
+                        <td id="mpage-580"></td>
+                        <td id="juz-580"></td>
+                    </tr>
+                    <tr>
+                        <td>581</td>
+                        <td>Mohammed Minhaj</td>
+                        <td id="page-581"></td>
+                        <td id="opage-581"></td>
+                        <td id="mpage-581"></td>
+                        <td id="juz-581"></td>
+                    </tr>
+                    <tr>
+                        <td>582</td>
+                        <td>Mohammed Adnan</td>
+                        <td id="page-582"></td>
+                        <td id="opage-582"></td>
+                        <td id="mpage-582"></td>
+                        <td id="juz-582"></td>
+                    </tr>
+                    <tr>
+                        <td>583</td>
+                        <td>Mohammed Hafiz</td>
+                        <td id="page-583"></td>
+                        <td id="opage-583"></td>
+                        <td id="mpage-583"></td>
+                        <td id="juz-583"></td>
+                    </tr>
+                    <tr>
+                        <td>584</td>
+                        <td>Sayyid Ashmil</td>
+                        <td id="page-584"></td>
+                        <td id="opage-584"></td>
+                        <td id="mpage-584"></td>
+                        <td id="juz-584"></td>
+                    </tr>
+                    <tr>
+                        <td>585</td>
+                        <td>Mohammed Anas</td>
+                        <td id="page-585"></td>
+                        <td id="opage-585"></td>
+                        <td id="mpage-585"></td>
+                        <td id="juz-585"></td>
+                    </tr>
+                    <tr>
+                        <td>586</td>
+                        <td>Shahid</td>
+                        <td id="page-586"></td>
+                        <td id="opage-586"></td>
+                        <td id="mpage-586"></td>
+                        <td id="juz-586"></td>
+                    </tr>
+                    <tr>
+                        <td>587</td>
+                        <td>Mohammed Shahid</td>
+                        <td id="page-587"></td>
+                        <td id="opage-587"></td>
+                        <td id="mpage-587"></td>
+                        <td id="juz-587"></td>
+                    </tr>
+                    <tr>
+                        <td>588</td>
+                        <td>Mohammed Hashim</td>
+                        <td id="page-588"></td>
+                        <td id="opage-588"></td>
+                        <td id="mpage-588"></td>
+                        <td id="juz-588"></td>
+                    </tr>
+                    <tr>
+                        <td>589</td>
+                        <td>Mohammed Thayyib</td>
+                        <td id="page-589"></td>
+                        <td id="opage-589"></td>
+                        <td id="mpage-589"></td>
+                        <td id="juz-589"></td>
+                    </tr>
+                    <tr>
+                        <td>590</td>
+                        <td>Ashmil Sha</td>
+                        <td id="page-590"></td>
+                        <td id="opage-590"></td>
+                        <td id="mpage-590"></td>
+                        <td id="juz-590"></td>
+                    </tr>
+                    <tr>
+                        <td>591</td>
+                        <td>Mohammed Hammad</td>
+                        <td id="page-591"></td>
+                        <td id="opage-591"></td>
+                        <td id="mpage-591"></td>
+                        <td id="juz-591"></td>
+                    </tr>
+                    <tr>
+                        <td>592</td>
+                        <td>Mohammed Hussain</td>
+                        <td id="page-592"></td>
+                        <td id="opage-592"></td>
+                        <td id="mpage-592"></td>
+                        <td id="juz-592"></td>
+                    </tr>
+                    <tr>
+                        <td>593</td>
+                        <td>Musthafa Najeeh</td>
+                        <td id="page-593"></td>
+                        <td id="opage-593"></td>
+                        <td id="mpage-593"></td>
+                        <td id="juz-593"></td>
+                    </tr>
+                    <tr>
+                        <td>594</td>
+                        <td>Mohammed Saeed</td>
+                        <td id="page-594"></td>
+                        <td id="opage-594"></td>
+                        <td id="mpage-594"></td>
+                        <td id="juz-594"></td>
+                    </tr>
+                    <tr>
+                        <td>595</td>
+                        <td>Sayyid Muhammed Shbili</td>
+                        <td id="page-595"></td>
+                        <td id="opage-595"></td>
+                        <td id="mpage-595"></td>
+                        <td id="juz-595"></td>
+                    </tr>
+                    <tr>
+                        <td>596</td>
+                        <td>Mohammed Yaseen</td>
+                        <td id="page-596"></td>
+                        <td id="opage-596"></td>
+                        <td id="mpage-596"></td>
+                        <td id="juz-596"></td>
+                    </tr>
+                    <tr>
+                        <td>597</td>
+                        <td>Mohammed Shan Ashiq</td>
+                        <td id="page-597"></td>
+                        <td id="opage-597"></td>
+                        <td id="mpage-597"></td>
+                        <td id="juz-597"></td>
+                    </tr>
+                    <tr>
+                        <td>598</td>
+                        <td>Mohammed Musthafa</td>
+                        <td id="page-598"></td>
+                        <td id="opage-598"></td>
+                        <td id="mpage-598"></td>
+                        <td id="juz-598"></td>
+                    </tr>
+                    <tr>
+                        <td>599</td>
+                        <td>Ahmed Sinan</td>
+                        <td id="page-599"></td>
+                        <td id="opage-599"></td>
+                        <td id="mpage-599"></td>
+                        <td id="juz-599"></td>
+                    </tr>
+                    <tr>
+                        <td>600</td>
+                        <td>Mohammed Nafih</td>
+                        <td id="page-600"></td>
+                        <td id="opage-600"></td>
+                        <td id="mpage-600"></td>
+                        <td id="juz-600"></td>
+                    </tr>
+                    <tr>
+                        <td>601</td>
+                        <td>Mohammed Sadiq</td>
+                        <td id="page-601"></td>
+                        <td id="opage-601"></td>
+                        <td id="mpage-601"></td>
+                        <td id="juz-601"></td>
+                    </tr>
+                    <tr>
+                        <td>602</td>
+                        <td>Mohammed Siyad</td>
+                        <td id="page-602"></td>
+                        <td id="opage-602"></td>
+                        <td id="mpage-602"></td>
+                        <td id="juz-602"></td>
+                    </tr>
+                    <tr>
+                        <td>603</td>
+                        <td>Mohammed Ihsan</td>
+                        <td id="page-603"></td>
+                        <td id="opage-603"></td>
+                        <td id="mpage-603"></td>
+                        <td id="juz-603"></td>
+                    </tr>
+                    <tr>
+                        <td>604</td>
+                        <td>Anvar</td>
+                        <td id="page-604"></td>
+                        <td id="opage-604"></td>
+                        <td id="mpage-604"></td>
+                        <td id="juz-604"></td>
+                    </tr>
+                    <tr>
+                        <td>605</td>
+                        <td>Mohammed Shafi</td>
+                        <td id="page-605"></td>
+                        <td id="opage-605"></td>
+                        <td id="mpage-605"></td>
+                        <td id="juz-605"></td>
+                    </tr>
+                    <tr>
+                        <td>606</td>
+                        <td>Sayyid Adil Sulthan</td>
+                        <td id="page-606"></td>
+                        <td id="opage-606"></td>
+                        <td id="mpage-606"></td>
+                        <td id="juz-606"></td>
+                    </tr>
+                    <tr>
+                        <td>607</td>
+                        <td>Mohammed Shaheer</td>
+                        <td id="page-607"></td>
+                        <td id="opage-607"></td>
+                        <td id="mpage-607"></td>
+                        <td id="juz-607"></td>
+                    </tr>
+                    <tr>
+                        <td>608</td>
+                        <td>Mohammed Raees</td>
+                        <td id="page-608"></td>
+                        <td id="opage-608"></td>
+                        <td id="mpage-608"></td>
+                        <td id="juz-608"></td>
+                    </tr>
+                    <tr>
+                        <td>609</td>
+                        <td>Sayyid Muhammed Ajlan</td>
+                        <td id="page-609"></td>
+                        <td id="opage-609"></td>
+                        <td id="mpage-609"></td>
+                        <td id="juz-609"></td>
+                    </tr>
+                    <tr>
+                        <td>610</td>
+                        <td>Shiras</td>
+                        <td id="page-610"></td>
+                        <td id="opage-610"></td>
+                        <td id="mpage-610"></td>
+                        <td id="juz-610"></td>
+                    </tr>
+                    <tr>
+                        <td>611</td>
+                        <td>Mohammed Shammas</td>
+                        <td id="page-611"></td>
+                        <td id="opage-611"></td>
+                        <td id="mpage-611"></td>
+                        <td id="juz-611"></td>
+                    </tr>
+                    <tr>
+                        <td>612</td>
+                        <td>Ahmed Hibathu Rahman</td>
+                        <td id="page-612"></td>
+                        <td id="opage-612"></td>
+                        <td id="mpage-612"></td>
+                        <td id="juz-612"></td>
+                    </tr>
+                    <tr>
+                        <td>613</td>
+                        <td>Mohammed Rashid</td>
+                        <td id="page-613"></td>
+                        <td id="opage-613"></td>
+                        <td id="mpage-613"></td>
+                        <td id="juz-613"></td>
+                    </tr>
+                    <tr>
+                        <td>614</td>
+                        <td>Sayyid Sadaqath</td>
+                        <td id="page-614"></td>
+                        <td id="opage-614"></td>
+                        <td id="mpage-614"></td>
+                        <td id="juz-614"></td>
+                    </tr> 
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Admin form -->
+    <div class="lock-container" id="adminForm" style="display:none;">
+        <h3>Admin Login</h3>
+        <input type="password" id="password" class="form-control" placeholder="Enter admin password" onkeydown="submitAdmin(event)">
+        <button class="btn btn-primary" onclick="unlockForm()" id="unlock">Unlock Form</button>
+        <div id="error-message" class="error"></div>
+    </div>
+
+    <!-- Student form -->
+    <div class="form-container" id="student-form" style="display:none;">
+        <h3>Update Student Details</h3>
+        <label for="admNo">Select Student Adm No:</label>
+       <!-- Select Dropdown -->
+<select id="admNo" class="form-control">
+    <option value="573">573 - Mohammed Hamdan</option>  
+    <option value="574">574 - Mohammed Aboobacker</option>
+    <option value="575">575 - Mohammed Sinan</option>
+    <option value="576">576 - Munthalir Hameem</option>
+    <option value="577">577 - Savad</option>
+    <option value="578">578 - Mohammed Shah</option>
+    <option value="579">579 - Mohammed Swabeeh</option>
+    <option value="580">580 - Mohammed Minhaj</option>
+</select>
+
+    
+        <label for="page">പാഠം</label>
+        <input type="text" id="page" class="form-control" placeholder="Enter Page details" onkeydown="moveFocus(event, 'opage')">
+    
+        <label for="opage">അഞ്ച് പാഠം</label>
+        <input type="text" id="opage" class="form-control" placeholder="Enter Opage details" onkeydown="moveFocus(event, 'mpage')">
+    
+        <label for="mpage">മുറാജഅ</label>
+        <input type="text" id="mpage" class="form-control" placeholder="Enter mpage details" onkeydown="moveFocus(event, 'juz')">
+    
+        <label for="mpage">Total Juz</label>
+        <input type="text" id="juz" class="form-control" placeholder="Enter mpage details" onkeydown="submitForm(event)">
+        <button class="btn btn-success" onclick="updateStudentInfo()">Save</button>
+    </div>
+
+    <script>
+  // Function to move focus to the next input field when "Enter" is pressed
+  function moveFocus(event, nextFieldId) {
+            if (event.key === "Enter") {
+                event.preventDefault();  // Prevent form submission
+                document.getElementById(nextFieldId).focus();  // Move focus to the next field
+            }
+        }
+    
+        // Function to submit the form when the "Enter" key is pressed in the last input field
+        function submitForm(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();  // Prevent form submission
+                updateStudentInfo();  // Call the function to update the student info
+            }
+        }
+
+        function submitAdmin(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();  // Prevent form submission
+                unlockForm();  // Call the function to update the student info
+            }
+        }
+
+
+        // Function to toggle the admin form visibility
+        function toggleAdminForm() {
+    const adminForm = document.getElementById('adminForm');
+    const adminButton = document.getElementById('adminButton');
+    if (adminForm.style.display === 'none') {
+        adminForm.style.display = 'block';
+        adminButton.innerText = 'Logout';
+        // Scroll to the admin form
+        adminForm.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        adminForm.style.display = 'none';
+        adminButton.innerText = 'Admin';
+    }
+}
+
+        // Function to unlock the form if the correct password is provided
+        function unlockForm() {
+    const password = document.getElementById('password').value;
+    const errorMessage = document.getElementById('error-message');
+    const studentForm = document.getElementById('student-form');
+
+    const ADMIN_PASSWORD = "a"; // You can change this password
+
+    if (password === ADMIN_PASSWORD) {
+        studentForm.style.display = 'block';
+        errorMessage.innerText = '';
+        console.log("✅ Correct password! Form is now visible.");
+        // Scroll to the student form
+        studentForm.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        errorMessage.innerText = '❌ Incorrect password. Please try again.';
+        console.log("❌ Wrong password entered.");
+    }
+}
+    </script>
+
+</body>
+</html>

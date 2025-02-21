@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="apple-touch-icon" sizes="180x180" href="../FAVICON/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../FAVICON/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../FAVICON/favicon-16x16.png">
+    <link rel="manifest" href="../FAVICON/site.webmanifest">
+    <link rel="icon" type="image/png" sizes="32x32" href="../FAVICON/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../FAVICON/android-chrome-512x512.png">
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Month</title>
+    <style>
+        /* General body styles */
+        body {
+           
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f0f4f8, #e0e7ff); /* Soft gradient from light blue to light grey */
+            color: #333;
+            min-height: 100vh; /* Ensure the body stretches to full screen */
+        }
+
+        /* Add padding to the body to push content below the back button */
+        body {
+            padding-top: 80px; /* Adjust this to push content down */
+        }
+
+        /* Style for the month box */
+        .box {
+            border: 1px solid #ddd; /* Light border for a more subtle appearance */
+            background-color: #ffffff; /* Clean white background for the boxes */
+            padding: 20px;
+            border-radius: 8px; /* More rounded corners */
+            margin: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+            transition: all 0.3s ease; /* Smooth transition for effects */
+        }
+
+        /* Removing the underline from the links in the boxes */
+        .box a {
+            text-decoration: none; /* Removes the underline */
+            color: inherit; /* Makes the text color inherit from its parent */
+        }
+
+        /* Hover effect for the month boxes */
+        .box:hover {
+            transform: translateY(-5px); /* Lift effect on hover */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
+        }
+
+        .title {
+            font-weight: bold;
+            text-align: center;
+            font-size: 20px;
+            color: #333; /* Dark color for text */
+            margin-bottom: 10px;
+        }
+
+        .label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        /* Back button positioning in the top-left corner */
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .back-button a {
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #3e8e41; /* Darker green for a more software feel */
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none; /* Removed border to avoid blue line */
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+        }
+
+        /* Remove the blue line when the button is focused or clicked */
+        .back-button a:focus,
+        .back-button a:active {
+            outline: none; /* Prevent the default focus outline */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Maintain a consistent shadow */
+        }
+
+        .back-button a:hover {
+            background-color: #2c6a2f;
+            border-color: #2c6a2f;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .back-button a:active {
+            background-color: #255d2d;
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Back Button in the Top-Left Corner -->
+    <div class="back-button">
+        <a href="8-main.html">Go Back</a>
+    </div>
+
+     <!-- Month Boxes -->
+ <div class="col-12 col-md-5 box" onclick="window.location.href='25-march.html'" role="button" tabindex="0" style="cursor: pointer;">
+    <div class="title">FEBRUARY</div>
+</div>
+<!--
+<div class="col-12 col-md-5 box" onclick="window.location.href='25-marcho.html'" role="button" tabindex="0" style="cursor: pointer;">
+<div class="title">MARCH</div> 
+
+    
+</div> -->
+<!--
+<div class="col-12 col-md-5 box" onclick="window.location.href='25-april.html'" role="button" tabindex="0" style="cursor: pointer;">
+    <div class="title">APRIL</div>  
+    </div> -->
+
+  <!--  <div class="col-12 col-md-5 box" onclick="window.location.href='25-may.html'" role="button" tabindex="0" style="cursor: pointer;">
+        <div class="title">MAY</div>  
+        </div> -->
+
+  <!--      <div class="col-12 col-md-5 box" onclick="window.location.href='25-june.html'" role="button" tabindex="0" style="cursor: pointer;">
+            <div class="title">JUNE</div>  
+            </div> -->
+
+      <!--      <div class="col-12 col-md-5 box" onclick="window.location.href='25-july.html'" role="button" tabindex="0" style="cursor: pointer;">
+                <div class="title">JULY</div>  
+                </div> -->
+
+         <!--       <div class="col-12 col-md-5 box" onclick="window.location.href='25-august.html'" role="button" tabindex="0" style="cursor: pointer;">
+                    <div class="title">AUGUST</div>  
+                    </div> -->
+
+          <!--          <div class="col-12 col-md-5 box" onclick="window.location.href='25-september.html'" role="button" tabindex="0" style="cursor: pointer;">
+                        <div class="title">SEPTEMBER</div>  
+                        </div> 
+
+    
+</div> -->
+</body>
+</html>

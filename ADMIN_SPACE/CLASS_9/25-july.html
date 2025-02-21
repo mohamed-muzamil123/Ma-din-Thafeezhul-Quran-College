@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="apple-touch-icon" sizes="180x180" href="../FAVICON/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../FAVICON/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../FAVICON/favicon-16x16.png">
+    <link rel="manifest" href="../FAVICON/site.webmanifest">
+    <link rel="icon" type="image/png" sizes="32x32" href="../FAVICON/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../FAVICON/android-chrome-512x512.png">
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Student Table</title>
+    <!-- Add Bootstrap Latest CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script type="module">
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-analytics.js";
+      
+        const firebaseConfig = {
+            apiKey: "AIzaSyAY1lYlM5yv7K9Vkb-jIkQQala7ckekWXM",
+            authDomain: "hifz-demo.firebaseapp.com",
+            projectId: "hifz-demo",
+            storageBucket: "hifz-demo.appspot.com",
+            messagingSenderId: "448125408252",
+            appId: "1:448125408252:web:099fb4bca38519bcd7d879",
+            measurementId: "G-GZRDVCWG5N"
+        };
+    
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const analytics = getAnalytics(app);
+    
+        window.loadStudentData = async function () {
+    try {
+        // Create an array of promises for all Firestore document fetches
+        const promises = [];
+        for (let i = 447; i <= 572; i++) {
+            const studentRef = doc(db, "25-july-9", i.toString());
+            promises.push(getDoc(studentRef)); // Add the promise to the array
+        }
+
+        // Wait for all promises to resolve concurrently
+        const results = await Promise.all(promises);
+
+        // Process the results
+        results.forEach((docSnap, index) => {
+            const admNo = 447 + index; // Calculate the admission number
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                document.getElementById('page-' + admNo).innerText = data.page || '';
+                document.getElementById('opage-' + admNo).innerText = data.opage || '';
+                document.getElementById('mpage-' + admNo).innerText = data.mpage || '';
+            } else {
+                console.log("No such document for Adm No " + admNo);
+            }
+        });
+    } catch (error) {
+        console.error("Error loading student data:", error);
+    }
+};
+    
+        window.updateStudentInfo = async function() {
+            const admNo = document.getElementById('admNo').value;
+            const page = document.getElementById('page').value;
+            const opage = document.getElementById('opage').value;
+            const mpage = document.getElementById('mpage').value;
+    
+            const studentRef = doc(db, "25-july-9", admNo);
+    
+            try {
+                await setDoc(studentRef, { page, opage, mpage }, { merge: true });
+                console.log("Document successfully updated!");
+                loadStudentData();
+                document.getElementById('page').value = '';
+                document.getElementById('opage').value = '';
+                document.getElementById('mpage').value = '';
+                document.getElementById('admNo').value = '';
+            } catch (error) {
+                console.error("Error updating document:", error);
+            }
+        };
+    
+        window.onload = loadStudentData;
+    </script>
+
+    <!-- Add Bootstrap Latest JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        h2 {
+            text-align: center;
+            margin: 30px 0;
+            font-size: 28px;
+            color: #333;
+        }
+
+        /* Button container for mobile responsiveness */
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #f4f4f9;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        /* Back button styling */
+        .back-button a {
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #3e8e41;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 14px;
+            border: 2px solid #3e8e41;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Admin button styling */
+        .admin-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .admin-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Table styling */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table-bordered th, .table-bordered td {
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        /* Form container styling */
+        .form-container {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Error message styling */
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Button container for back and admin buttons -->
+    <div class="button-container">
+        <div class="back-button">
+            <a href="9-month.html" class="green-button">Go Back</a>
+        </div>
+        <button class="admin-button" id="adminButton" onclick="toggleAdminForm()">Admin</button>
+    </div>
+
+    <h2>Student Monthly Chart</h2>
+
+    <!-- Responsive table -->
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Adm No</th>
+                    <th>Name</th>
+                    <th>പാഠം</th>
+                    <th>അഞ്ച് പാഠം</th>
+                    <th>മുറാജഅ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>447</td>
+                    <td>Muhammed Aboobacker</td>
+                    <td id="page-447"></td>
+                    <td id="opage-447"></td>
+                    <td id="mpage-447"></td>
+                    <td id="juz-447"></td>
+                </tr>
+                <tr>
+                    <td>449</td>
+                    <td>Muhammed Adil</td>
+                    <td id="page-449"></td>
+                    <td id="opage-449"></td>
+                    <td id="mpage-449"></td>
+                    <td id="juz-449"></td>
+                </tr>
+                <tr>
+                    <td>450</td>
+                    <td>Mubashir Kolathur</td>
+                    <td id="page-450"></td>
+                    <td id="opage-450"></td>
+                    <td id="mpage-450"></td>
+                    <td id="juz-450"></td>
+                </tr>
+                <tr>
+                    <td>464</td>
+                    <td>Muhammed Shehin</td>
+                    <td id="page-464"></td>
+                    <td id="opage-464"></td>
+                    <td id="mpage-464"></td>
+                    <td id="juz-464"></td>
+                </tr>
+                <tr>
+                    <td>465</td>
+                    <td>Muhammed Safwan T.S</td>
+                    <td id="page-465"></td>
+                    <td id="opage-465"></td>
+                    <td id="mpage-465"></td>
+                    <td id="juz-465"></td>
+                </tr>
+                <tr>
+                    <td>466</td>
+                    <td>Ahmed Abdul Hakeem</td>
+                    <td id="page-466"></td>
+                    <td id="opage-466"></td>
+                    <td id="mpage-466"></td>
+                    <td id="juz-466"></td>
+                </tr>
+                <tr>
+                    <td>467</td>
+                    <td>Sayyid Muhammed Anas P.M</td>
+                    <td id="page-467"></td>
+                    <td id="opage-467"></td>
+                    <td id="mpage-467"></td>
+                    <td id="juz-467"></td>
+                </tr>
+                <tr>
+                    <td>468</td>
+                    <td>Muhammed Basith</td>
+                    <td id="page-468"></td>
+                    <td id="opage-468"></td>
+                    <td id="mpage-468"></td>
+                    <td id="juz-468"></td>
+                </tr>
+                <tr>
+                    <td>469</td>
+                    <td>Muhammed Yaseen</td>
+                    <td id="page-469"></td>
+                    <td id="opage-469"></td>
+                    <td id="mpage-469"></td>
+                    <td id="juz-469"></td>
+                </tr>
+                <tr>
+                    <td>470</td>
+                    <td>Muhammed Sabith</td>
+                    <td id="page-470"></td>
+                    <td id="opage-470"></td>
+                    <td id="mpage-470"></td>
+                    <td id="juz-470"></td>
+                </tr>
+                <tr>
+                    <td>471</td>
+                    <td>Sayyid Fainaf Hashim</td>
+                    <td id="page-471"></td>
+                    <td id="opage-471"></td>
+                    <td id="mpage-471"></td>
+                    <td id="juz-471"></td>
+                </tr>
+                <tr>
+                    <td>472</td>
+                    <td>Sayyid Sadiqali</td>
+                    <td id="page-472"></td>
+                    <td id="opage-472"></td>
+                    <td id="mpage-472"></td>
+                    <td id="juz-472"></td>
+                </tr>
+                <tr>
+                    <td>474</td>
+                    <td>Muhammed Sinan V.B</td>
+                    <td id="page-474"></td>
+                    <td id="opage-474"></td>
+                    <td id="mpage-474"></td>
+                    <td id="juz-474"></td>
+                </tr>
+                <tr>
+                    <td>475</td>
+                    <td>Muhammed Sawad</td>
+                    <td id="page-475"></td>
+                    <td id="opage-475"></td>
+                    <td id="mpage-475"></td>
+                    <td id="juz-475"></td>
+                </tr>
+                <tr>
+                    <td>477</td>
+                    <td>Muhammed Musthafa</td>
+                    <td id="page-477"></td>
+                    <td id="opage-477"></td>
+                    <td id="mpage-477"></td>
+                    <td id="juz-477"></td>
+                </tr>
+                <tr>
+                    <td>478</td>
+                    <td>Muhammed Naseem T.K</td>
+                    <td id="page-478"></td>
+                    <td id="opage-478"></td>
+                    <td id="mpage-478"></td>
+                    <td id="juz-478"></td>
+                </tr>
+                <tr>
+                    <td>479</td>
+                    <td>Athahulla Darvaish</td>
+                    <td id="page-479"></td>
+                    <td id="opage-479"></td>
+                    <td id="mpage-479"></td>
+                    <td id="juz-479"></td>
+                </tr>
+                <tr>
+                    <td>480</td>
+                    <td>Muhammed Suhail P</td>
+                    <td id="page-480"></td>
+                    <td id="opage-480"></td>
+                    <td id="mpage-480"></td>
+                    <td id="juz-480"></td>
+                </tr>
+                <tr>
+                    <td>482</td>
+                    <td>Muhammed Muzammil</td>
+                    <td id="page-482"></td>
+                    <td id="opage-482"></td>
+                    <td id="mpage-482"></td>
+                    <td id="juz-482"></td>
+                </tr>
+                <tr>
+                    <td>483</td>
+                    <td>Salmanul Faris</td>
+                    <td id="page-483"></td>
+                    <td id="opage-483"></td>
+                    <td id="mpage-483"></td>
+                    <td id="juz-483"></td>
+                </tr>
+                <tr>
+                    <td>484</td>
+                    <td>Salahudheen Junaid</td>
+                    <td id="page-484"></td>
+                    <td id="opage-484"></td>
+                    <td id="mpage-484"></td>
+                    <td id="juz-484"></td>
+                </tr>
+                <tr>
+                    <td>485</td>
+                    <td>Jalaludheen M.M</td>
+                    <td id="page-485"></td>
+                    <td id="opage-485"></td>
+                    <td id="mpage-485"></td>
+                    <td id="juz-485"></td>
+                </tr>
+                <tr>
+                    <td>486</td>
+                    <td>Muhammed Noufal</td>
+                    <td id="page-486"></td>
+                    <td id="opage-486"></td>
+                    <td id="mpage-486"></td>
+                    <td id="juz-486"></td>
+                </tr>
+                <tr>
+                    <td>488</td>
+                    <td>Muhammed Yaseen M.R</td>
+                    <td id="page-488"></td>
+                    <td id="opage-488"></td>
+                    <td id="mpage-488"></td>
+                    <td id="juz-488"></td>
+                </tr>
+                <tr>
+                    <td>511</td>
+                    <td>Sayyid Muhammed Rafeeq</td>
+                    <td id="page-511"></td>
+                    <td id="opage-511"></td>
+                    <td id="mpage-511"></td>
+                    <td id="juz-511"></td>
+                </tr>
+                <tr>
+                    <td>528</td>
+                    <td>Muhammed Farhan</td>
+                    <td id="page-528"></td>
+                    <td id="opage-528"></td>
+                    <td id="mpage-528"></td>
+                    <td id="juz-528"></td>
+                </tr>
+                <tr>
+                    <td>569</td>
+                    <td>Ahmed Shammas</td>
+                    <td id="page-569"></td>
+                    <td id="opage-569"></td>
+                    <td id="mpage-569"></td>
+                    <td id="juz-569"></td>
+                </tr>
+                <tr>
+                    <td>572</td>
+                    <td>Muhammed Hafiz</td>
+                    <td id="page-572"></td>
+                    <td id="opage-572"></td>
+                    <td id="mpage-572"></td>
+                    <td id="juz-572"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Admin form -->
+    <div class="lock-container" id="adminForm" style="display:none;">
+        <h3>Admin Login</h3>
+        <input type="password" id="password" class="form-control" placeholder="Enter admin password" onkeydown="submitAdmin(event)">
+        <button class="btn btn-primary" onclick="unlockForm()" id="unlock">Unlock Form</button>
+        <div id="error-message" class="error"></div>
+    </div>
+
+    <!-- Student form -->
+    <div class="form-container" id="student-form" style="display:none;">
+        <h3>Update Student Details</h3>
+        <label for="admNo">Select Student Adm No:</label>
+        <select id="admNo" class="form-control">
+            <option value="447">447 - Muhammed Aboobacker</option>
+            <option value="449">449 - Muhammed Adil</option>
+            <option value="450">450 - Mubashir Kolathur</option>
+            <option value="464">464 - Muhammed Shehin</option>
+            <option value="465">465 - Muhammed Safwan T.S</option>
+            <option value="466">466 - Ahmed Abdul Hakeem</option>
+            <option value="467">467 - Sayyid Muhammed Anas P.M</option>
+            <option value="468">468 - Muhammed Basith</option>
+            <option value="469">469 - Muhammed Yaseen</option>
+            <option value="470">470 - Muhammed Sabith</option>
+            <option value="471">471 - Sayyid Fainaf Hashim</option>
+            <option value="472">472 - Sayyid Sadiqali</option>
+            <option value="474">474 - Muhammed Sinan V.B</option>
+            <option value="475">475 - Muhammed Sawad</option>
+            <option value="477">477 - Muhammed Musthafa</option>
+            <option value="478">478 - Muhammed Naseem T.K</option>
+            <option value="479">479 - Athahulla Darvaish</option>
+            <option value="480">480 - Muhammed Suhail P</option>
+            <option value="482">482 - Muhammed Muzammil</option>
+            <option value="483">483 - Salmanul Faris</option>
+            <option value="484">484 - Salahudheen Junaid</option>
+            <option value="485">485 - Jalaludheen M.M</option>
+            <option value="486">486 - Muhammed Noufal</option>
+            <option value="488">488 - Muhammed Yaseen M.R</option>
+            <option value="511">511 - Sayyid Muhammed Rafeeq</option>
+            <option value="528">528 - Muhammed Farhan</option>
+            <option value="569">569 - Ahmed Shammas</option>
+            <option value="572">572 - Muhammed Hafiz</option>
+        </select>
+    
+        <label for="page">പാഠം</label>
+        <input type="text" id="page" class="form-control" placeholder="Enter Page details" onkeydown="moveFocus(event, 'opage')">
+    
+        <label for="opage">അഞ്ച് പാഠം</label>
+        <input type="text" id="opage" class="form-control" placeholder="Enter Opage details" onkeydown="moveFocus(event, 'mpage')">
+    
+        <label for="mpage">മുറാജഅ</label>
+        <input type="text" id="mpage" class="form-control" placeholder="Enter mpage details" onkeydown="submitForm(event)">
+    
+        <button class="btn btn-success" onclick="updateStudentInfo()">Save</button>
+    </div>
+
+    <script>
+  // Function to move focus to the next input field when "Enter" is pressed
+  function moveFocus(event, nextFieldId) {
+            if (event.key === "Enter") {
+                event.preventDefault();  // Prevent form submission
+                document.getElementById(nextFieldId).focus();  // Move focus to the next field
+            }
+        }
+    
+        // Function to submit the form when the "Enter" key is pressed in the last input field
+        function submitForm(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();  // Prevent form submission
+                updateStudentInfo();  // Call the function to update the student info
+            }
+        }
+
+        function submitAdmin(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();  // Prevent form submission
+                unlockForm();  // Call the function to update the student info
+            }
+        }
+
+
+        // Function to toggle the admin form visibility
+        function toggleAdminForm() {
+    const adminForm = document.getElementById('adminForm');
+    const adminButton = document.getElementById('adminButton');
+    if (adminForm.style.display === 'none') {
+        adminForm.style.display = 'block';
+        adminButton.innerText = 'Logout';
+        // Scroll to the admin form
+        adminForm.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        adminForm.style.display = 'none';
+        adminButton.innerText = 'Admin';
+    }
+}
+
+        // Function to unlock the form if the correct password is provided
+        function unlockForm() {
+    const password = document.getElementById('password').value;
+    const errorMessage = document.getElementById('error-message');
+    const studentForm = document.getElementById('student-form');
+
+    const ADMIN_PASSWORD = "a"; // You can change this password
+
+    if (password === ADMIN_PASSWORD) {
+        studentForm.style.display = 'block';
+        errorMessage.innerText = '';
+        console.log("✅ Correct password! Form is now visible.");
+        // Scroll to the student form
+        studentForm.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        errorMessage.innerText = '❌ Incorrect password. Please try again.';
+        console.log("❌ Wrong password entered.");
+    }
+}
+    </script>
+
+</body>
+</html>

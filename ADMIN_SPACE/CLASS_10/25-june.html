@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="apple-touch-icon" sizes="180x180" href="../FAVICON/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../FAVICON/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../FAVICON/favicon-16x16.png">
+    <link rel="manifest" href="../FAVICON/site.webmanifest">
+    <link rel="icon" type="image/png" sizes="32x32" href="../FAVICON/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../FAVICON/android-chrome-512x512.png">
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Student Table</title>
+    <!-- Add Bootstrap Latest CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script type="module">
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-analytics.js";
+      
+        const firebaseConfig = {
+            apiKey: "AIzaSyAY1lYlM5yv7K9Vkb-jIkQQala7ckekWXM",
+            authDomain: "hifz-demo.firebaseapp.com",
+            projectId: "hifz-demo",
+            storageBucket: "hifz-demo.appspot.com",
+            messagingSenderId: "448125408252",
+            appId: "1:448125408252:web:099fb4bca38519bcd7d879",
+            measurementId: "G-GZRDVCWG5N"
+        };
+    
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const analytics = getAnalytics(app);
+    
+        window.loadStudentData = async function () {
+    try {
+        // Create an array of promises for all Firestore document fetches
+        const promises = [];
+        for (let i = 412; i <= 473; i++) {
+            const studentRef = doc(db, "25-june-10", i.toString());
+            promises.push(getDoc(studentRef)); // Add the promise to the array
+        }
+
+        // Wait for all promises to resolve concurrently
+        const results = await Promise.all(promises);
+
+        // Process the results
+        results.forEach((docSnap, index) => {
+            const admNo = 412 + index; // Calculate the admission number
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                document.getElementById('page-' + admNo).innerText = data.page || '';
+                document.getElementById('opage-' + admNo).innerText = data.opage || '';
+                document.getElementById('mpage-' + admNo).innerText = data.mpage || '';
+            } else {
+                console.log("No such document for Adm No " + admNo);
+            }
+        });
+    } catch (error) {
+        console.error("Error loading student data:", error);
+    }
+};
+    
+        window.updateStudentInfo = async function() {
+            const admNo = document.getElementById('admNo').value;
+            const page = document.getElementById('page').value;
+            const opage = document.getElementById('opage').value;
+            const mpage = document.getElementById('mpage').value;
+    
+            const studentRef = doc(db, "25-june-10", admNo);
+    
+            try {
+                await setDoc(studentRef, { page, opage, mpage }, { merge: true });
+                console.log("Document successfully updated!");
+                loadStudentData();
+                document.getElementById('page').value = '';
+                document.getElementById('opage').value = '';
+                document.getElementById('mpage').value = '';
+                document.getElementById('admNo').value = '';
+            } catch (error) {
+                console.error("Error updating document:", error);
+            }
+        };
+    
+        window.onload = loadStudentData;
+    </script>
+
+    <!-- Add Bootstrap Latest JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        h2 {
+            text-align: center;
+            margin: 30px 0;
+            font-size: 28px;
+            color: #333;
+        }
+
+        /* Button container for mobile responsiveness */
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #f4f4f9;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        /* Back button styling */
+        .back-button a {
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #3e8e41;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 14px;
+            border: 2px solid #3e8e41;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Admin button styling */
+        .admin-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .admin-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Table styling */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table-bordered th, .table-bordered td {
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        /* Form container styling */
+        .form-container {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Error message styling */
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Button container for back and admin buttons -->
+    <div class="button-container">
+        <div class="back-button">
+            <a href="10-month.html" class="green-button">Go Back</a>
+        </div>
+        <button class="admin-button" id="adminButton" onclick="toggleAdminForm()">Admin</button>
+    </div>
+
+    <h2>Student Monthly Chart</h2>
+
+    <!-- Responsive table -->
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Adm No</th>
+                    <th>Name</th>
+                    <th>പാഠം</th>
+                    <th>അഞ്ച് പാഠം</th>
+                    <th>മുറാജഅ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>412</td>
+                    <td>Muhammed Jaseem V.T</td>
+                    <td id="page-412"></td>
+                    <td id="opage-412"></td>
+                    <td id="mpage-412"></td>
+                    <td id="juz-412"></td>
+                </tr>
+                <tr>
+                    <td>433</td>
+                    <td>Muhammed Sabith</td>
+                    <td id="page-433"></td>
+                    <td id="opage-433"></td>
+                    <td id="mpage-433"></td>
+                    <td id="juz-433"></td>
+                </tr>
+                <tr>
+                    <td>434</td>
+                    <td>Muhammed Sahl</td>
+                    <td id="page-434"></td>
+                    <td id="opage-434"></td>
+                    <td id="mpage-434"></td>
+                    <td id="juz-434"></td>
+                </tr>
+                <tr>
+                    <td>435</td>
+                    <td>Muhammed Naseem A.K</td>
+                    <td id="page-435"></td>
+                    <td id="opage-435"></td>
+                    <td id="mpage-435"></td>
+                    <td id="juz-435"></td>
+                </tr>
+                <tr>
+                    <td>436</td>
+                    <td>Muhammed Fayid</td>
+                    <td id="page-436"></td>
+                    <td id="opage-436"></td>
+                    <td id="mpage-436"></td>
+                    <td id="juz-436"></td>
+                </tr>
+                <tr>
+                    <td>437</td>
+                    <td>Muhammed Rabeen K.K</td>
+                    <td id="page-437"></td>
+                    <td id="opage-437"></td>
+                    <td id="mpage-437"></td>
+                    <td id="juz-437"></td>
+                </tr>
+                <tr>
+                    <td>440</td>
+                    <td>Nasweeh V.T</td>
+                    <td id="page-440"></td>
+                    <td id="opage-440"></td>
+                    <td id="mpage-440"></td>
+                    <td id="juz-440"></td>
+                </tr>
+                <tr>
+                    <td>444</td>
+                    <td>Arshad Hasan</td>
+                    <td id="page-444"></td>
+                    <td id="opage-444"></td>
+                    <td id="mpage-444"></td>
+                    <td id="juz-444"></td>
+                </tr>
+                <tr>
+                    <td>448</td>
+                    <td>Sinan P</td>
+                    <td id="page-448"></td>
+                    <td id="opage-448"></td>
+                    <td id="mpage-448"></td>
+                    <td id="juz-448"></td>
+                </tr>
+                <tr>
+                    <td>451</td>
+                    <td>Muhammed Safwan E.K</td>
+                    <td id="page-451"></td>
+                    <td id="opage-451"></td>
+                    <td id="mpage-451"></td>
+                    <td id="juz-451"></td>
+                </tr>
+                <tr>
+                    <td>454</td>
+                    <td>Bahaudheen</td>
+                    <td id="page-454"></td>
+                    <td id="opage-454"></td>
+                    <td id="mpage-454"></td>
+                    <td id="juz-454"></td>
+                </tr>
+                <tr>
+                    <td>456</td>
+                    <td>Muhammed Shaheer</td>
+                    <td id="page-456"></td>
+                    <td id="opage-456"></td>
+                    <td id="mpage-456"></td>
+                    <td id="juz-456"></td>
+                </tr>
+                <tr>
+                    <td>473</td>
+                    <td>Muhammed Sinan T</td>
+                    <td id="page-473"></td>
+                    <td id="opage-473"></td>
+                    <td id="mpage-473"></td>
+                    <td id="juz-473"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Admin form -->
+    <div class="lock-container" id="adminForm" style="display:none;">
+        <h3>Admin Login</h3>
+        <input type="password" id="password" class="form-control" placeholder="Enter admin password" onkeydown="submitAdmin(event)">
+        <button class="btn btn-primary" onclick="unlockForm()" id="unlock">Unlock Form</button>
+        <div id="error-message" class="error"></div>
+    </div>
+
+    <!-- Student form -->
+    <div class="form-container" id="student-form" style="display:none;">
+        <h3>Update Student Details</h3>
+        <label for="admNo">Select Student Adm No:</label>
+        <select id="admNo" class="form-control">
+            <option value="412">412 - Muhammed Jaseem V.T</option>
+            <option value="433">433 - Muhammed Sabith</option>
+            <option value="434">434 - Muhammed Sahl</option>
+            <option value="435">435 - Muhammed Naseem A.K</option>
+            <option value="436">436 - Muhammed Fayid</option>
+            <option value="437">437 - Muhammed Rabeen K.K</option>
+            <option value="440">440 - Nasweeh V.T</option>
+            <option value="444">444 - Arshad Hasan</option>
+            <option value="448">448 - Sinan P</option>
+            <option value="451">451 - Muhammed Safwan E.K</option>
+            <option value="454">454 - Bahaudheen</option>
+            <option value="456">456 - Muhammed Shaheer</option>
+            <option value="473">473 - Muhammed Sinan T</option>
+        </select>
+        
+    
+        <label for="page">പാഠം</label>
+        <input type="text" id="page" class="form-control" placeholder="Enter Page details" onkeydown="moveFocus(event, 'opage')">
+    
+        <label for="opage">അഞ്ച് പാഠം</label>
+        <input type="text" id="opage" class="form-control" placeholder="Enter Opage details" onkeydown="moveFocus(event, 'mpage')">
+    
+        <label for="mpage">മുറാജഅ</label>
+        <input type="text" id="mpage" class="form-control" placeholder="Enter mpage details" onkeydown="submitForm(event)">
+    
+        <button class="btn btn-success" onclick="updateStudentInfo()">Save</button>
+    </div>
+
+    <script>
+  // Function to move focus to the next input field when "Enter" is pressed
+  function moveFocus(event, nextFieldId) {
+            if (event.key === "Enter") {
+                event.preventDefault();  // Prevent form submission
+                document.getElementById(nextFieldId).focus();  // Move focus to the next field
+            }
+        }
+    
+        // Function to submit the form when the "Enter" key is pressed in the last input field
+        function submitForm(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();  // Prevent form submission
+                updateStudentInfo();  // Call the function to update the student info
+            }
+        }
+
+        function submitAdmin(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();  // Prevent form submission
+                unlockForm();  // Call the function to update the student info
+            }
+        }
+
+
+        // Function to toggle the admin form visibility
+        function toggleAdminForm() {
+    const adminForm = document.getElementById('adminForm');
+    const adminButton = document.getElementById('adminButton');
+    if (adminForm.style.display === 'none') {
+        adminForm.style.display = 'block';
+        adminButton.innerText = 'Logout';
+        // Scroll to the admin form
+        adminForm.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        adminForm.style.display = 'none';
+        adminButton.innerText = 'Admin';
+    }
+}
+
+        // Function to unlock the form if the correct password is provided
+        function unlockForm() {
+    const password = document.getElementById('password').value;
+    const errorMessage = document.getElementById('error-message');
+    const studentForm = document.getElementById('student-form');
+
+    const ADMIN_PASSWORD = "a"; // You can change this password
+
+    if (password === ADMIN_PASSWORD) {
+        studentForm.style.display = 'block';
+        errorMessage.innerText = '';
+        console.log("✅ Correct password! Form is now visible.");
+        // Scroll to the student form
+        studentForm.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        errorMessage.innerText = '❌ Incorrect password. Please try again.';
+        console.log("❌ Wrong password entered.");
+    }
+}
+    </script>
+
+</body>
+</html>
